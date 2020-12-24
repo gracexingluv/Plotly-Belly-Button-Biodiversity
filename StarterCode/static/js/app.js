@@ -2,10 +2,9 @@ var path = "/samples.json";
 var currentIndex = 0;
 
 d3.json(path).then((data) => {
-    // load drop down menu is number of option is 0
+    // load drop down menu if number of option is 0
     var options = d3.select("#selDataset");
-    options.selectAll("option").data(data.names).enter().append("option").text(function(d) {return d});
-    
+    options.selectAll("option").data(data.names).enter().append("option").text(function(d) {return d});   
     makeVis(data);
 });
 
@@ -29,7 +28,7 @@ var makeVis = function(data) {
     var dropdown = d3.select("#selDataset")
         .on("change", dropdownChange);
 
-    // first draw!
+    // firt draw!
     var candidataData = searchByIndex(data, 0);
     drawBar(candidataData, "bar", newPlot=true);
     drawBubble(candidataData, "bubble", newPlot=true);
@@ -76,11 +75,20 @@ function drawBar(data, divName, newPlot=true) {
 // function for drawing bubble chart
 function drawBubble(data, divName, newPlot=true) {
     // reorder data by otu ID
-    var reorderData = data;
-   
+    var reorderData = [];
+    for (let i=0; i < data.otuIDs.length; i++) {
+        reorderData.push({
+            "oriIndex": i, 
+            "otuTextIDs": data.otuTextIDs[i], 
+            "otuIDs": data.otuIDs[i], 
+            "otuLabels": data.otuLabels[i],
+            "otuValues": data.otuValues[i]
+        })
+    }
     reorderData.sort(function(first, second) {
         return first.otuIDs - second.otuIDs;
     });
+    newIndex = reorderData.map(x => x.oriIndex)
 
     var data = [{
         mode: 'markers',
